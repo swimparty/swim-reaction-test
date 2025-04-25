@@ -143,10 +143,6 @@
     }
 
     startButton.addEventListener('click', handleStart);
-    startButton.addEventListener('touchstart', function (e) {
-      e.preventDefault();
-      handleStart();
-    }, { passive: false });
 
     document.body.addEventListener('click', (e) => {
       e.preventDefault();
