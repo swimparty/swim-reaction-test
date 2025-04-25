@@ -87,7 +87,8 @@
       }
     }
 
-    function handleStart() {
+    function handleStart(e) {
+      e.preventDefault();
       startButton.style.display = 'none';
       message.textContent = 'Take your mark...';
       reactionTime.textContent = '';
@@ -109,9 +110,10 @@
       };
     }
 
-    function handleReaction() {
+    function handleReaction(e) {
       if (!canClick) return;
       if (!gameStarted) return;
+      e.preventDefault();
 
       if (!canReact) {
         message.textContent = 'False Start!';
@@ -143,16 +145,10 @@
     }
 
     startButton.addEventListener('click', handleStart);
+    startButton.addEventListener('touchend', handleStart);
 
-    document.body.addEventListener('click', (e) => {
-      e.preventDefault();
-      handleReaction();
-    });
-
-    document.body.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      handleReaction();
-    }, { passive: false });
+    document.body.addEventListener('click', handleReaction);
+    document.body.addEventListener('touchend', handleReaction);
 
   </script>
 
