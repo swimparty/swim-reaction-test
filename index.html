@@ -72,7 +72,6 @@
 
     let gameStarted = false;
     let canReact = false;
-    let canClick = false;
     let startTimestamp = null;
     let bestReaction = null;
 
@@ -94,7 +93,6 @@
       reactionTime.textContent = '';
       gameStarted = true;
       canReact = false;
-      canClick = true;
       startTimestamp = null;
 
       markSound.play();
@@ -111,21 +109,9 @@
     }
 
     function handleReaction(e) {
-      if (!canClick) return;
       if (!gameStarted) return;
+      if (!canReact) return;
       e.preventDefault();
-
-      if (!canReact) {
-        message.textContent = 'False Start!';
-        reactionTime.textContent = 'Too Early!';
-        startButton.textContent = 'Try Again';
-        startButton.style.display = 'inline-block';
-        gameStarted = false;
-        canReact = false;
-        canClick = false;
-        startTimestamp = null;
-        return;
-      }
 
       if (canReact && startTimestamp) {
         const endTimestamp = Date.now();
@@ -136,7 +122,6 @@
         updateBestTime(reaction);
         gameStarted = false;
         canReact = false;
-        canClick = false;
         startTimestamp = null;
 
         startButton.textContent = 'Try Again';
