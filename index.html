@@ -49,7 +49,7 @@
     }
   </style>
 </head>
-<body>
+<body ontouchstart="" style="touch-action: manipulation;">
 
   <h1>Swim Reaction Test</h1>
   <div id="message">Press Start when you're ready!</div>
@@ -70,9 +70,10 @@
     const markSound = document.getElementById('markSound');
     const beepSound = document.getElementById('beepSound');
 
-    let isReady = false;
+    let gameStarted = false;
     let canReact = false;
-    let startTimestamp;
+    let canClick = false;
+    let startTimestamp = null;
     let bestReaction = null;
 
     function updateBestTime(newTime) {
@@ -86,12 +87,14 @@
       }
     }
 
-    startButton.addEventListener('click', () => {
+    function handleStart() {
       startButton.style.display = 'none';
       message.textContent = 'Take your mark...';
       reactionTime.textContent = '';
-      isReady = false;
+      gameStarted = true;
       canReact = false;
+      canClick = true;
+      startTimestamp = null;
 
       markSound.play();
 
@@ -103,17 +106,21 @@
           canReact = true;
           startTimestamp = Date.now();
         }, randomDelay);
-      }
-    });
+      };
+    }
 
     function handleReaction() {
-      if (!canReact && startTimestamp) {
+      if (!canClick) return;
+      if (!gameStarted) return;
+
+      if (!canReact) {
         message.textContent = 'False Start!';
         reactionTime.textContent = 'Too Early!';
         startButton.textContent = 'Try Again';
         startButton.style.display = 'inline-block';
-        isReady = false;
+        gameStarted = false;
         canReact = false;
+        canClick = false;
         startTimestamp = null;
         return;
       }
@@ -125,14 +132,21 @@
         message.textContent = 'Your Reaction Time:';
         reactionTime.textContent = reaction.toFixed(3) + ' seconds';
         updateBestTime(reaction);
-        isReady = false;
+        gameStarted = false;
         canReact = false;
+        canClick = false;
         startTimestamp = null;
 
         startButton.textContent = 'Try Again';
         startButton.style.display = 'inline-block';
       }
     }
+
+    startButton.addEventListener('click', handleStart);
+    startButton.addEventListener('touchstart', function (e) {
+      e.preventDefault();
+      handleStart();
+    }, { passive: false });
 
     document.body.addEventListener('click', (e) => {
       e.preventDefault();
