@@ -52,7 +52,7 @@
 <body ontouchstart="" style="touch-action: manipulation;">
 
   <h1>Swim Reaction Test</h1>
-  <div id="message">Press Start when you're ready!</div>
+  <div id="message">Tap when you hear the beep.</div>
   <button id="startButton">Start</button>
   <div id="reactionTime"></div>
   <div id="bestTime"></div>
@@ -93,7 +93,6 @@
     function handleStart(e) {
       e.preventDefault();
       startButton.style.display = 'none';
-      message.textContent = 'Take your mark...';
       reactionTime.textContent = '';
       gameStarted = true;
       canReact = false;
@@ -105,7 +104,6 @@
         const randomDelay = Math.random() * 1500 + 1000;
         setTimeout(() => {
           beepSound.play();
-          message.textContent = 'GO! Tap NOW!';
           if (isMobileDevice()) {
             setTimeout(() => {
               canReact = true;
@@ -150,4 +148,3 @@
 
 </body>
 </html>
-
