@@ -58,8 +58,7 @@
   <div id="bestTime"></div>
   <div id="newRecord">New Record!</div>
 
-  <audio id="markSound" src="take_your_mark.mp3"></audio>
-  <audio id="beepSound" src="beep.mp3"></audio>
+  <audio id="takeYourMarkAudio" src="take_your_mark.mp3"></audio>
 
   <script>
     const startButton = document.getElementById('startButton');
@@ -67,13 +66,33 @@
     const reactionTime = document.getElementById('reactionTime');
     const bestTime = document.getElementById('bestTime');
     const newRecord = document.getElementById('newRecord');
-    const markSound = document.getElementById('markSound');
-    const beepSound = document.getElementById('beepSound');
 
     let gameStarted = false;
     let canReact = false;
     let startTimestamp = null;
     let bestReaction = null;
+
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playBeep() {
+      const oscillator = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(1000, audioCtx.currentTime);
+      gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+
+      oscillator.start();
+      oscillator.stop(audioCtx.currentTime + 0.2); // 0.2초로 변경
+    }
+
+    function playTakeYourMark() {
+      const audio = document.getElementById('takeYourMarkAudio');
+      audio.play();
+    }
 
     function isMobileDevice() {
       return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -93,33 +112,26 @@
     function handleStart(e) {
       e.preventDefault();
       startButton.style.display = 'none';
+      message.textContent = 'Tap when you hear the beep.';
       reactionTime.textContent = '';
       gameStarted = true;
       canReact = false;
       startTimestamp = null;
 
-      markSound.play();
+      playTakeYourMark();
 
-      markSound.onended = () => {
+      setTimeout(() => {
         const randomDelay = Math.random() * 1500 + 1000;
         setTimeout(() => {
-          beepSound.play();
-          if (isMobileDevice()) {
-            setTimeout(() => {
-              canReact = true;
-              startTimestamp = Date.now();
-            }, 300);
-          } else {
-            canReact = true;
-            startTimestamp = Date.now();
-          }
+          playBeep();
+          canReact = true;
+          startTimestamp = Date.now();
         }, randomDelay);
-      };
+      }, 1000);
     }
 
     function handleReaction(e) {
       if (!gameStarted) return;
-      if (!canReact) return;
       e.preventDefault();
 
       if (canReact && startTimestamp) {
