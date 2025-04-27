@@ -75,6 +75,10 @@
     let startTimestamp = null;
     let bestReaction = null;
 
+    function isMobileDevice() {
+      return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    }
+
     function updateBestTime(newTime) {
       if (bestReaction === null || newTime < bestReaction) {
         bestReaction = newTime;
@@ -102,8 +106,15 @@
         setTimeout(() => {
           beepSound.play();
           message.textContent = 'GO! Tap NOW!';
-          canReact = true;
-          startTimestamp = Date.now();
+          if (isMobileDevice()) {
+            setTimeout(() => {
+              canReact = true;
+              startTimestamp = Date.now();
+            }, 300);
+          } else {
+            canReact = true;
+            startTimestamp = Date.now();
+          }
         }, randomDelay);
       };
     }
@@ -139,3 +150,4 @@
 
 </body>
 </html>
+
