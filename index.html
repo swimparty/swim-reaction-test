@@ -30,17 +30,21 @@
       font-size: 24px;
       margin: 20px;
     }
+    .false-start {
+      color: red;
+      font-weight: bold;
+    }
     #reactionTime {
       font-size: 28px;
       font-weight: bold;
       margin-top: 20px;
-      color: #ffb6c1; /* 밝은 핑크색 */
+      color: #ffb6c1;
     }
     #bestTime {
       font-size: 28px;
       font-weight: bold;
       margin-top: 20px;
-      color: #87cefa; /* 밝은 하늘색 */
+      color: #87cefa;
     }
     #newRecord {
       font-size: 32px;
@@ -102,10 +106,6 @@
       audio.play();
     }
 
-    function isMobileDevice() {
-      return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-    }
-
     function updateBestTime(newTime) {
       if (bestReaction === null || newTime < bestReaction) {
         bestReaction = newTime;
@@ -119,8 +119,10 @@
 
     function handleStart(e) {
       e.preventDefault();
+      e.stopPropagation();
       startButton.style.display = 'none';
       message.textContent = 'Tap when you hear the beep.';
+      message.classList.remove('false-start');
       reactionTime.textContent = '';
       gameStarted = true;
       canReact = false;
@@ -142,11 +144,24 @@
       if (!gameStarted) return;
       e.preventDefault();
 
+      if (!canReact) {
+        message.textContent = 'False Start! Too Early!';
+        message.classList.add('false-start');
+        reactionTime.textContent = '';
+        startButton.textContent = 'Try Again';
+        startButton.style.display = 'inline-block';
+        gameStarted = false;
+        canReact = false;
+        startTimestamp = null;
+        return;
+      }
+
       if (canReact && startTimestamp) {
         const endTimestamp = Date.now();
         const reaction = (endTimestamp - startTimestamp) / 1000;
 
         message.textContent = 'Your Reaction Time:';
+        message.classList.remove('false-start');
         reactionTime.textContent = reaction.toFixed(3) + ' seconds';
         updateBestTime(reaction);
         gameStarted = false;
